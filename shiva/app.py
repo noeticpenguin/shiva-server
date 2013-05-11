@@ -4,12 +4,12 @@ import sys
 from flask import Flask, g, request
 from flask.ext.restful import Api
 
-from shiva.models import db
 from shiva import resources
+from shiva.config import Configurator
+from shiva.models import db
 
 app = Flask(__name__)
-app.config.from_object('shiva.config')
-
+app.config.from_object(Configurator())
 db.app = app
 db.init_app(app)
 

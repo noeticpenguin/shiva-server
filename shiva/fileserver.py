@@ -5,12 +5,16 @@ import sys
 
 from flask import abort, Flask, Response
 
-from shiva.config import local
+from shiva.config import Configurator
+from shiva.utils import get_logger
 
 app = Flask(__name__)
+app.config.from_object(Configurator())
+
+log = get_logger()
 
 def get_absolute_path(relative_path):
-    for mdir in local.MEDIA_DIRS:
+    for mdir in app.config.get('MEDIA_DIRS', []):
         full_path = os.path.join(mdir.root, relative_path)
 
         for excluded in mdir.get_excluded_dirs():
@@ -39,11 +43,14 @@ def main():
     except:
         port = 8001
 
-    print("""
+    log.warn("""
     +------------------------------------------------------------+
     | This is a *development* server, for testing purposes only. |
     | Do NOT use in a live environment.                          |
     +------------------------------------------------------------+
     """)
 
-    app.run('0.0.0.0', port=port)
+    app.run('0.0.0.0', port=port, debug=False)
+
+if __name__ == '__main__':
+    main()

@@ -2,6 +2,10 @@
 import os
 import urllib2
 
+from shiva.utils import get_logger
+
+log = get_logger()
+
 
 class MediaDir(object):
     """This object allows for media configuration. By instantiating a MediaDir
@@ -161,7 +165,7 @@ class MediaDir(object):
         """
 
         if not os.path.exists(path):
-            print("[ WARNING ] Path '%s' does not exist. Ignoring." % path)
+            log.warn("Path '%s' does not exist. Ignoring." % path)
             return False
 
         return True
@@ -238,6 +242,7 @@ class MimeType(object):
 
     def __str__(self):
         return self.__unicode__()
+
 
 def get_mimetypes():
     from flask import current_app as app

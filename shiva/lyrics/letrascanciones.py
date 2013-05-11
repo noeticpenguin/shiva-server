@@ -6,6 +6,9 @@ import lxml.html
 from slugify import slugify
 
 from shiva.lyrics import LyricScraper
+from shiva.utils import get_logger
+
+log = get_logger()
 
 
 class MP3Lyrics(LyricScraper):
@@ -37,7 +40,7 @@ class MP3Lyrics(LyricScraper):
         if not self.check():
             return False
 
-        print('[FOUND] %s' % self.source)
+        log.info('[FOUND] %s' % self.source)
         self.lyric_re.pattern
         lyrics = self.lyric_re.findall(self.html)[0]
         lyrics = re.sub(r'<span id="findmorespan">.*?</span>', '', lyrics)
@@ -50,7 +53,7 @@ class MP3Lyrics(LyricScraper):
 
     def search(self):
         query = urllib2.quote('%s %s' % (self.artist, self.title))
-        print('[SEARCH] %s' % (self.search_url % query))
+        log.info('[SEARCH] %s' % (self.search_url % query))
         response = requests.get(self.search_url % query)
         results = self.lyric_url_re.findall(response.text)
 
@@ -61,13 +64,13 @@ class MP3Lyrics(LyricScraper):
         match = self.title_re.search(self.html)
 
         if slugify(match.group('artist')) != slugify(self.artist):
-            print ('%s != %s' % (slugify(match.group('artist')),
-                                 slugify(self.artist)))
+            log.info('%s != %s' % (slugify(match.group('artist')),
+                                   slugify(self.artist)))
             return False
 
         if slugify(match.group('title')) != slugify(self.title):
-            print ('%s != %s' % (slugify(match.group('title')),
-                                 slugify(self.title)))
+            log.info('%s != %s' % (slugify(match.group('title')),
+                                   slugify(self.title)))
             return False
 
         return True

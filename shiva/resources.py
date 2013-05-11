@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
-import logging
 import urllib2
 import traceback
 
@@ -17,8 +16,9 @@ from shiva.http import Resource, JSONResponse
 from shiva.lyrics import get_lyrics
 from shiva.mocks import ShowModel
 from shiva.models import Artist, Album, Track, Lyrics
+from shiva.utils import get_logger
 
-logger = logging.getLogger(__name__)
+log = get_logger()
 
 
 def full_tree():
@@ -359,7 +359,7 @@ class LyricsResource(Resource):
         try:
             lyrics = get_lyrics(track)
         except:
-            logging.debug(traceback.format_exc())
+            log.debug(traceback.format_exc())
             lyrics = None
 
         if not lyrics:
@@ -402,7 +402,7 @@ class ConvertResource(Resource):
         try:
             converter = ConverterClass(track, mimetype=mimetype)
         except InvalidMimeTypeError, e:
-            print(e)
+            log.error(e)
             abort(400)
 
         converter.convert()
@@ -475,7 +475,7 @@ class ShowsResource(Resource):
 
         bit_uri = '&'.join((bit_uri, '='.join(('location', _location))))
 
-        logger.info(bit_uri)
+        log.info(bit_uri)
 
         try:
             response = requests.get(bit_uri)
@@ -525,7 +525,7 @@ class WhatsNewResource(Resource):
         try:
             self.since = datetime.strptime(request.args.get('since'), '%Y%m%d')
         except:
-            print(traceback.format_exc())
+            log.error(traceback.format_exc())
             return news
 
         news = {
@@ -567,6 +567,13 @@ class ClientResource(Resource):
                 'uri': 'https://github.com/instant-solutions/shiva4j',
                 'authors': [
                     u'instant:solutions <office@instant-it.at>'
+                ],
+            },
+            {
+                'name': 'Shakti',
+                'uri': 'https://github.com/gonz/shakti',
+                'authors': [
+                    u'Gonzalo Saavedra <gonzalosaavedra@gmail.com>',
                 ],
             },
         ]
